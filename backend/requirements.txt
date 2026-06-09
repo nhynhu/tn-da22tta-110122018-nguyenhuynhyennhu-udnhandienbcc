@@ -1,0 +1,8 @@
+flask
+flask-sqlalchemy
+flask-cors
+pymysql
+ultralytics
+pillow
+python-dotenv
+
