@@ -4,6 +4,7 @@ import 'package:beetle_app/main.dart';
 void main() {
   testWidgets('BeetleApp loads', (WidgetTester tester) async {
     await tester.pumpWidget(const BeetleApp());
-    expect(find.text('Beetle ID'), findsOneWidget);
+    expect(find.text('Nhận diện bọ cánh cứng'), findsOneWidget);
   });
 }
+

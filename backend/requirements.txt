@@ -5,4 +5,5 @@ pymysql
 ultralytics
 pillow
 python-dotenv
-
+opencv-python
+numpy

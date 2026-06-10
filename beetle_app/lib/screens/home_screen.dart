@@ -77,6 +77,59 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  void _showMediaPicker() {
+    const primaryBlue = Color(0xFF006079);
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              Text(
+                'Chọn loại tệp',
+                style: GoogleFonts.inter(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 12),
+              ListTile(
+                leading: const Icon(Icons.image_outlined, color: primaryBlue),
+                title: Text('Chọn ảnh', style: GoogleFonts.inter()),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImage(ImageSource.gallery);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.video_library_outlined, color: primaryBlue),
+                title: Text('Chọn video', style: GoogleFonts.inter()),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickVideo();
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Future<void> _pickVideo() async {
     try {
       final XFile? picked = await _picker.pickVideo(
@@ -180,27 +233,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   SizedBox(
                     width: double.infinity,
                     child: OutlinedButton.icon(
-                      onPressed: () => _pickImage(ImageSource.gallery),
-                      icon: const Icon(Icons.image_outlined),
+                      onPressed: _showMediaPicker,
+                      icon: const Icon(Icons.photo_library_outlined),
                       label: const Text('Chọn từ thư viện'),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: textOnSurface,
-                        backgroundColor: const Color(0xFFEDEEEF),
-                        side: const BorderSide(color: Color(0xFFBEC8CD)),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton.icon(
-                      onPressed: _pickVideo,
-                      icon: const Icon(Icons.video_library_outlined),
-                      label: const Text('Chọn video từ thư viện'),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: textOnSurface,
                         backgroundColor: const Color(0xFFEDEEEF),

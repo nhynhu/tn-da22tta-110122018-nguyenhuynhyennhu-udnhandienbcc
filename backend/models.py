@@ -54,6 +54,9 @@ class DetectionHistory(db.Model):
     image_path  = db.Column(db.String(500))
     detected_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+    def __init__(self, device_id=None, class_name=None, confidence=None, bbox=None, image_path=None, **kwargs):
+        super().__init__(device_id=device_id, class_name=class_name, confidence=confidence, bbox=bbox, image_path=image_path, **kwargs)  # type: ignore
+
     def to_dict(self):
         return {
             "id"         : self.id,

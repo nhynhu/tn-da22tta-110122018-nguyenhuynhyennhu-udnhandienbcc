@@ -14,5 +14,5 @@ class Config:
         f"@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DB}"
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    MODEL_PATH = os.getenv('MODEL_PATH', 'best.pt')
+    MODEL_PATH = os.getenv('MODEL_PATH', 'best.onnx')
     CONF_THRESHOLD = float(os.getenv('CONF_THRESHOLD', 0.25))

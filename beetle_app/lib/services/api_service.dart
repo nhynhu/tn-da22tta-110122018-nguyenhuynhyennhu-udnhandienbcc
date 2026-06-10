@@ -7,18 +7,20 @@ import '../config/api_config.dart';
 import '../models/prediction.dart';
 import '../models/species.dart';
 import '../models/history.dart';
+import '../models/video_result.dart';
 
 class ApiService {
   /// Gửi ảnh lên server để nhận diện bọ cánh cứng
   static Future<List<Prediction>> predictImage(
-      File imageFile, String deviceId) async {
+    File imageFile,
+    String deviceId,
+  ) async {
     try {
       final uri = Uri.parse(ApiConfig.predictUrl);
       final request = http.MultipartRequest('POST', uri);
 
       // Detect MIME type
-      final mimeType =
-          lookupMimeType(imageFile.path) ?? 'image/jpeg';
+      final mimeType = lookupMimeType(imageFile.path) ?? 'image/jpeg';
       final mimeTypeSplit = mimeType.split('/');
 
       request.files.add(
@@ -99,10 +101,10 @@ class ApiService {
       final params = <String, String>{'limit': limit.toString()};
       if (deviceId != null) params['device_id'] = deviceId;
 
-      final uri =
-          Uri.parse(ApiConfig.historyUrl).replace(queryParameters: params);
-      final response =
-          await http.get(uri).timeout(const Duration(seconds: 15));
+      final uri = Uri.parse(
+        ApiConfig.historyUrl,
+      ).replace(queryParameters: params);
+      final response = await http.get(uri).timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body) as List;
@@ -162,10 +164,12 @@ class ApiService {
   /// Xóa toàn bộ lịch sử của thiết bị
   static Future<void> clearHistory(String deviceId) async {
     try {
-      final uri = Uri.parse(ApiConfig.historyUrl).replace(
-        queryParameters: {'device_id': deviceId},
-      );
-      final response = await http.delete(uri).timeout(const Duration(seconds: 15));
+      final uri = Uri.parse(
+        ApiConfig.historyUrl,
+      ).replace(queryParameters: {'device_id': deviceId});
+      final response = await http
+          .delete(uri)
+          .timeout(const Duration(seconds: 15));
       if (response.statusCode != 200) {
         final data = json.decode(response.body);
         throw Exception(data['message'] ?? 'Xóa toàn bộ lịch sử thất bại');
@@ -175,5 +179,31 @@ class ApiService {
     } catch (e) {
       rethrow;
     }
+  }
+
+  /// Gửi cả video lên server, chờ xử lý, nhận về URL video đã vẽ khung.
+  static Future<VideoDetectionResult> processVideo(
+    File videoFile,
+    String deviceId,
+  ) async {
+    final uri = Uri.parse('${ApiConfig.baseUrl}/api/predict_video');
+
+    final request = http.MultipartRequest('POST', uri)
+      ..fields['device_id'] = deviceId
+      ..files.add(await http.MultipartFile.fromPath('video', videoFile.path));
+
+    // Xử lý video lâu -> timeout dài
+    final streamed = await request.send().timeout(const Duration(minutes: 10));
+    final res = await http.Response.fromStream(streamed);
+
+    if (res.statusCode != 200) {
+      throw Exception('Server trả về lỗi: ${res.statusCode}');
+    }
+
+    final data = jsonDecode(res.body) as Map<String, dynamic>;
+    if (data['status'] != 'success') {
+      throw Exception(data['message'] ?? 'Xử lý video thất bại');
+    }
+    return VideoDetectionResult.fromJson(data);
   }
 }

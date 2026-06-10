@@ -48,11 +48,20 @@ def get_history():
     device_id = request.args.get("device_id")
     limit     = int(request.args.get("limit", 20))
 
-    query = DetectionHistory.query.order_by(DetectionHistory.detected_at.desc())
-    if device_id:
-        query = query.filter_by(device_id=device_id)
+    results = db.session.query(DetectionHistory, Species.ten_viet).\
+        outerjoin(Species, DetectionHistory.class_name == Species.class_name).\
+        order_by(DetectionHistory.detected_at.desc())
 
-    return jsonify([h.to_dict() for h in query.limit(limit).all()])
+    if device_id:
+        results = results.filter(DetectionHistory.device_id == device_id)
+
+    history_list = []
+    for history, ten_viet in results.limit(limit).all():
+        d = history.to_dict()
+        d["ten_viet"] = ten_viet or ""
+        history_list.append(d)
+
+    return jsonify(history_list)
 
 
 @species_bp.route("/history/<int:history_id>", methods=["DELETE"])

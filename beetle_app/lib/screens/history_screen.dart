@@ -298,7 +298,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          item.className,
+                          item.tenViet.isNotEmpty ? item.tenViet : item.className,
                           style: GoogleFonts.sora(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
