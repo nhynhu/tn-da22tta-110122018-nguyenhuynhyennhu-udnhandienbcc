@@ -7,7 +7,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'result_screen.dart';
 import 'video_playback_screen.dart';
 import 'species_list_screen.dart';
-import 'history_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -116,7 +115,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.video_library_outlined, color: primaryBlue),
+                leading: const Icon(
+                  Icons.video_library_outlined,
+                  color: primaryBlue,
+                ),
                 title: Text('Chọn video', style: GoogleFonts.inter()),
                 onTap: () {
                   Navigator.pop(context);
@@ -161,11 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> screens = [
-      _buildHomeTab(),
-      const SpeciesListScreen(),
-      HistoryScreen(deviceId: _deviceId),
-    ];
+    final List<Widget> screens = [_buildHomeTab(), const SpeciesListScreen()];
 
     return Scaffold(
       body: IndexedStack(index: _currentIndex, children: screens),
@@ -202,7 +200,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   const SizedBox(height: 20),
                   Text(
-                    'Hướng camera vào một mẫu vật để AI nhận diện ngay lập tức.',
+                    'Nhận diện bọ cánh cứng bằng AI thông qua hình ảnh và video.',
                     textAlign: TextAlign.center,
                     style: GoogleFonts.inter(
                       fontSize: 14,
@@ -291,10 +289,6 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.bug_report_outlined),
             label: 'Danh sách loài',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.history_rounded),
-            label: 'Lịch sử',
           ),
         ],
       ),

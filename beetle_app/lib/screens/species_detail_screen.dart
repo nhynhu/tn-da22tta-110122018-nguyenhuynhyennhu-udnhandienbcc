@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/species.dart';
 import '../services/api_service.dart';
-import '../widgets/danger_badge.dart';
+
 
 class SpeciesDetailScreen extends StatefulWidget {
   final String className;
@@ -179,8 +179,7 @@ class _SpeciesDetailScreenState extends State<SpeciesDetailScreen> {
                         ],
                       ),
                     ),
-                    if (s.mucDoNguyHiem.isNotEmpty)
-                      DangerBadge(level: s.mucDoNguyHiem),
+
                   ],
                 ),
 

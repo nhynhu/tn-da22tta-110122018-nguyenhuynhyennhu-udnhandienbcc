@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer/shimmer.dart';
 import '../models/species.dart';
 import '../services/api_service.dart';
-import '../widgets/danger_badge.dart';
+
 import 'species_detail_screen.dart';
 
 class SpeciesListScreen extends StatefulWidget {
@@ -272,8 +272,6 @@ class _SpeciesListScreenState extends State<SpeciesListScreen> {
       ),
       itemBuilder: (context, index) {
         final s = _filteredList[index];
-        final isDanger = s.mucDoNguyHiem.toLowerCase() == 'rất cao' || s.mucDoNguyHiem.toLowerCase() == 'cao';
-        final descColor = isDanger ? const Color(0xFFBA1A1A) : const Color(0xFF006079);
 
         return Container(
           decoration: BoxDecoration(
@@ -303,35 +301,23 @@ class _SpeciesListScreenState extends State<SpeciesListScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Image with Danger badge overlay
+                // Image
                 Expanded(
-                  child: Stack(
-                    children: [
-                      Positioned.fill(
-                        child: ClipRRect(
-                          borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                          child: Image.network(
-                            s.hinhAnhUrl,
-                            fit: BoxFit.cover,
-                            errorBuilder: (ctx, err, stack) => Container(
-                              color: const Color(0xFFEDEEEF),
-                              child: const Icon(
-                                Icons.bug_report_rounded,
-                                color: Color(0xFF006079),
-                                size: 32,
-                              ),
-                            ),
-                          ),
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                    child: Image.network(
+                      s.hinhAnhUrl,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      errorBuilder: (ctx, err, stack) => Container(
+                        color: const Color(0xFFEDEEEF),
+                        child: const Icon(
+                          Icons.bug_report_rounded,
+                          color: Color(0xFF006079),
+                          size: 32,
                         ),
                       ),
-                      // Danger Badge Overlay
-                      if (s.mucDoNguyHiem.isNotEmpty)
-                        Positioned(
-                          top: 8,
-                          right: 8,
-                          child: DangerBadge(level: s.mucDoNguyHiem),
-                        ),
-                    ],
+                    ),
                   ),
                 ),
                 // Text Area
@@ -358,7 +344,7 @@ class _SpeciesListScreenState extends State<SpeciesListScreen> {
                         style: GoogleFonts.inter(
                           fontSize: 11,
                           fontStyle: FontStyle.italic,
-                          color: descColor,
+                          color: const Color(0xFF006079),
                           fontWeight: FontWeight.w500,
                         ),
                       ),

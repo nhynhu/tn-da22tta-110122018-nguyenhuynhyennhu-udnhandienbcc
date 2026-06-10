@@ -5,7 +5,6 @@ import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:video_player/video_player.dart';
 
-import '../models/video_result.dart';
 import '../services/api_service.dart';
 
 class VideoPlaybackScreen extends StatefulWidget {
@@ -30,7 +29,6 @@ class _VideoPlaybackScreenState extends State<VideoPlaybackScreen>
   String? _error;
 
   VideoPlayerController? _videoController;
-  VideoDetectionResult? _result;
 
   late final Stopwatch _sw;
   Ticker? _elapsedTicker;
@@ -77,7 +75,6 @@ class _VideoPlaybackScreenState extends State<VideoPlaybackScreen>
       }
 
       setState(() {
-        _result = result;
         _videoController = controller;
         _stage = _Stage.ready;
       });
@@ -153,7 +150,7 @@ class _VideoPlaybackScreenState extends State<VideoPlaybackScreen>
           ),
           const SizedBox(width: 8),
           Text(
-            'Nhận diện Video',
+            'Nhận diện video',
             style: GoogleFonts.sora(
               color: Colors.white,
               fontSize: 18,
@@ -183,7 +180,7 @@ class _VideoPlaybackScreenState extends State<VideoPlaybackScreen>
             ),
             const SizedBox(height: 28),
             Text(
-              'Đang chạy mô hình trên video...',
+              'Đang xử lý...',
               style: GoogleFonts.sora(
                 color: Colors.white,
                 fontSize: 16,
@@ -192,7 +189,7 @@ class _VideoPlaybackScreenState extends State<VideoPlaybackScreen>
             ),
             const SizedBox(height: 10),
             Text(
-              'Hệ thống đang nhận diện bọ cánh cứng từng khung hình\nvà vẽ khung lên video. Vui lòng đợi một lát.',
+              'Hệ thống đang nhận diện. Vui lòng chờ trong ít phút!',
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(color: Colors.white60, fontSize: 13),
             ),
@@ -294,8 +291,6 @@ class _VideoPlaybackScreenState extends State<VideoPlaybackScreen>
           ),
         ),
 
-        if (_result != null && _result!.detections.isNotEmpty) _buildSummary(),
-
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
           child: Row(
@@ -361,60 +356,6 @@ class _VideoPlaybackScreenState extends State<VideoPlaybackScreen>
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildSummary() {
-    final items = _result!.detections;
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: const Color(0xFF00DBE9).withValues(alpha: 0.3),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Đã phát hiện ${items.length} loài',
-            style: GoogleFonts.sora(
-              color: Colors.white,
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: items.map((d) {
-              final name = d.tenViet.isNotEmpty ? d.tenViet : d.className;
-              return Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 5,
-                ),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF00DBE9).withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  '$name · ${d.confidence.toStringAsFixed(0)}%',
-                  style: GoogleFonts.inter(
-                    color: const Color(0xFF00DBE9),
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
-        ],
-      ),
     );
   }
 }

@@ -6,7 +6,7 @@ import 'package:mime/mime.dart';
 import '../config/api_config.dart';
 import '../models/prediction.dart';
 import '../models/species.dart';
-import '../models/history.dart';
+
 import '../models/video_result.dart';
 
 class ApiService {
@@ -92,30 +92,7 @@ class ApiService {
     }
   }
 
-  /// Lấy lịch sử nhận diện
-  static Future<List<DetectionHistoryItem>> getHistory({
-    String? deviceId,
-    int limit = 20,
-  }) async {
-    try {
-      final params = <String, String>{'limit': limit.toString()};
-      if (deviceId != null) params['device_id'] = deviceId;
 
-      final uri = Uri.parse(
-        ApiConfig.historyUrl,
-      ).replace(queryParameters: params);
-      final response = await http.get(uri).timeout(const Duration(seconds: 15));
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body) as List;
-        return data.map((h) => DetectionHistoryItem.fromJson(h)).toList();
-      } else {
-        throw Exception('Lỗi khi tải lịch sử');
-      }
-    } on SocketException {
-      throw Exception('Không thể kết nối đến server');
-    }
-  }
 
   /// Gửi phản hồi khi nhận diện sai
   static Future<bool> sendFeedback({
@@ -144,42 +121,7 @@ class ApiService {
     }
   }
 
-  /// Xóa 1 mục lịch sử nhận diện
-  static Future<void> deleteHistoryItem(int id) async {
-    try {
-      final response = await http
-          .delete(Uri.parse('${ApiConfig.historyUrl}/$id'))
-          .timeout(const Duration(seconds: 15));
-      if (response.statusCode != 200) {
-        final data = json.decode(response.body);
-        throw Exception(data['message'] ?? 'Xóa mục lịch sử thất bại');
-      }
-    } on SocketException {
-      throw Exception('Không thể kết nối đến server. Kiểm tra kết nối mạng.');
-    } catch (e) {
-      rethrow;
-    }
-  }
 
-  /// Xóa toàn bộ lịch sử của thiết bị
-  static Future<void> clearHistory(String deviceId) async {
-    try {
-      final uri = Uri.parse(
-        ApiConfig.historyUrl,
-      ).replace(queryParameters: {'device_id': deviceId});
-      final response = await http
-          .delete(uri)
-          .timeout(const Duration(seconds: 15));
-      if (response.statusCode != 200) {
-        final data = json.decode(response.body);
-        throw Exception(data['message'] ?? 'Xóa toàn bộ lịch sử thất bại');
-      }
-    } on SocketException {
-      throw Exception('Không thể kết nối đến server. Kiểm tra kết nối mạng.');
-    } catch (e) {
-      rethrow;
-    }
-  }
 
   /// Gửi cả video lên server, chờ xử lý, nhận về URL video đã vẽ khung.
   static Future<VideoDetectionResult> processVideo(

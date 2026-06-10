@@ -11,7 +11,7 @@ class Species {
   final String moiTruong;
   final String gayHai;
   final String phongChong;
-  final String mucDoNguyHiem;
+
   final String hinhAnhUrl;
 
   Species({
@@ -25,7 +25,7 @@ class Species {
     required this.moiTruong,
     required this.gayHai,
     required this.phongChong,
-    required this.mucDoNguyHiem,
+
     required this.hinhAnhUrl,
   });
 
@@ -45,7 +45,7 @@ class Species {
       moiTruong: json['moi_truong'] ?? '',
       gayHai: json['gay_hai'] ?? '',
       phongChong: json['phong_chong'] ?? '',
-      mucDoNguyHiem: json['muc_do_nguy_hiem'] ?? '',
+
       hinhAnhUrl: fullUrl,
     );
   }

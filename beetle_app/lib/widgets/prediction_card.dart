@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/prediction.dart';
-import '../widgets/danger_badge.dart';
+
 
 class PredictionCard extends StatelessWidget {
   final Prediction prediction;
@@ -97,8 +97,6 @@ class PredictionCard extends StatelessWidget {
               const SizedBox(height: 12),
               Row(
                 children: [
-                  if (prediction.mucDoNguyHiem.isNotEmpty)
-                    DangerBadge(level: prediction.mucDoNguyHiem),
                   const Spacer(),
                   const Icon(
                     Icons.arrow_forward_ios_rounded,

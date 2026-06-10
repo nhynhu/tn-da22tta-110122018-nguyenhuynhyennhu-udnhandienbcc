@@ -8,7 +8,7 @@ class Prediction {
   final String tenKhoaHoc;
   final String gayHai;
   final String phongChong;
-  final String mucDoNguyHiem;
+
   final String hinhAnhUrl;
 
   Prediction({
@@ -19,7 +19,7 @@ class Prediction {
     required this.tenKhoaHoc,
     required this.gayHai,
     required this.phongChong,
-    required this.mucDoNguyHiem,
+
     required this.hinhAnhUrl,
   });
 
@@ -38,7 +38,7 @@ class Prediction {
       tenKhoaHoc: json['ten_khoa_hoc'] ?? '',
       gayHai: json['gay_hai'] ?? '',
       phongChong: json['phong_chong'] ?? '',
-      mucDoNguyHiem: json['muc_do_nguy_hiem'] ?? '',
+
       hinhAnhUrl: fullUrl,
     );
   }

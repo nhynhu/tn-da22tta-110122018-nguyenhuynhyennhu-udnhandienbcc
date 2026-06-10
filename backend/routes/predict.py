@@ -85,7 +85,7 @@ def predict():
 
         model = current_app.config["YOLO_MODEL"]
         conf_thres = current_app.config["CONF_THRESHOLD"]
-        results = model(img, conf=conf_thres)[0]
+        results = model(img, conf=MIN_CONFIDENCE)[0]
 
         device_id = request.form.get("device_id", "unknown")
 

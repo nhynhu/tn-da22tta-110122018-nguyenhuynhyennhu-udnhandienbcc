@@ -47,10 +47,10 @@ class _ResultScreenState extends State<ResultScreen>
 
     _scanController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 3),
-    )..repeat(reverse: true);
-    _scanAnimation = Tween<double>(begin: 0.05, end: 0.95).animate(
-      CurvedAnimation(parent: _scanController, curve: Curves.easeInOut),
+      duration: const Duration(seconds: 2),
+    );
+    _scanAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _scanController, curve: Curves.easeOut),
     );
 
     _loadImageDimensions();
@@ -94,6 +94,7 @@ class _ResultScreenState extends State<ResultScreen>
           _isLoading = false;
         });
         _animController.forward();
+        _scanController.forward();
       }
     } catch (e) {
       if (mounted) {
@@ -201,24 +202,59 @@ class _ResultScreenState extends State<ResultScreen>
 
   Widget _buildContent(Color primaryBlue) {
     if (_predictions.isEmpty) {
-      return Center(
+      return SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(32.0),
+          padding: const EdgeInsets.all(24.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
-                Icons.bug_report_outlined,
-                color: Color(0xFF6F797E),
-                size: 64,
-              ),
               const SizedBox(height: 16),
-              Text(
-                'Không tìm thấy loài bọ nào trong ảnh.',
-                textAlign: TextAlign.center,
-                style: GoogleFonts.inter(
-                  color: const Color(0xFF3F484D),
-                  fontSize: 16,
+              // Hiển thị ảnh đã gửi
+              ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Container(
+                  constraints: BoxConstraints(
+                    maxHeight: MediaQuery.of(context).size.height * 0.45,
+                  ),
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Image.file(
+                    widget.imageFile,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 28),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFF3E0),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: const Color(0xFFFFCC02).withValues(alpha: 0.4),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.info_outline_rounded,
+                      color: Color(0xFFE65100),
+                      size: 28,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Không tìm thấy loài bọ cánh cứng nào trong ảnh này.',
+                        style: GoogleFonts.inter(
+                          color: const Color(0xFFE65100),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -295,6 +331,7 @@ class _ResultScreenState extends State<ResultScreen>
                                     ? topPrediction.tenViet
                                     : topPrediction.className,
                                 const Color(0xFF00DBE9),
+                                topPrediction.confidencePercent,
                               ),
                           ],
                         ),
@@ -388,41 +425,7 @@ class _ResultScreenState extends State<ResultScreen>
                                         ],
                                       ),
                                     ),
-                                    // Danger Badge
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 12,
-                                        vertical: 6,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xFFE1E3E4),
-                                        borderRadius: BorderRadius.circular(20),
-                                        border: Border.all(
-                                          color: const Color(
-                                            0xFFBEC8CD,
-                                          ).withValues(alpha: 0.5),
-                                        ),
-                                      ),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          const Icon(
-                                            Icons.info_outline_rounded,
-                                            size: 13,
-                                            color: Color(0xFF3F484D),
-                                          ),
-                                          const SizedBox(width: 6),
-                                          Text(
-                                            'Nguy hiểm: ${topPrediction.mucDoNguyHiem.isNotEmpty ? topPrediction.mucDoNguyHiem : "Thấp"}',
-                                            style: GoogleFonts.inter(
-                                              fontSize: 11,
-                                              fontWeight: FontWeight.bold,
-                                              color: const Color(0xFF3F484D),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
+
                                   ],
                                 ),
                               ],
@@ -479,6 +482,7 @@ class _ResultScreenState extends State<ResultScreen>
     double offsetY,
     String label,
     Color color,
+    String confidence,
   ) {
     // bbox từ YOLO xyxyn: [x1, y1, x2, y2] normalized (0..1)
     final isNormalized = bbox.every((val) => val <= 1.0);
@@ -530,7 +534,7 @@ class _ResultScreenState extends State<ResultScreen>
           _buildBoxCorner(isTop: false, isLeft: true, color: color),
           _buildBoxCorner(isTop: false, isLeft: false, color: color),
 
-          // Scanning Line Inside Box
+          // Scanning Line — chạy xuống 1 lần rồi dừng
           AnimatedBuilder(
             animation: _scanAnimation,
             builder: (context, child) {
@@ -538,20 +542,23 @@ class _ResultScreenState extends State<ResultScreen>
                 left: 0,
                 right: 0,
                 top: _scanAnimation.value * h,
-                child: Container(
-                  height: 2,
-                  decoration: BoxDecoration(
-                    color: color,
-                    boxShadow: [
-                      BoxShadow(color: color, blurRadius: 6, spreadRadius: 1),
-                    ],
+                child: Opacity(
+                  opacity: 1.0 - _scanAnimation.value,
+                  child: Container(
+                    height: 2,
+                    decoration: BoxDecoration(
+                      color: color,
+                      boxShadow: [
+                        BoxShadow(color: color, blurRadius: 6, spreadRadius: 1),
+                      ],
+                    ),
                   ),
                 ),
               );
             },
           ),
 
-          // Label Tooltip
+          // Label + Confidence
           Positioned(
             top: -24,
             left: 0,
@@ -559,7 +566,7 @@ class _ResultScreenState extends State<ResultScreen>
               color: color,
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
               child: Text(
-                label,
+                '$label  $confidence',
                 style: const TextStyle(
                   color: Colors.black,
                   fontSize: 10,
