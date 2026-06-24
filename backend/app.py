@@ -19,7 +19,7 @@ def create_app():
 
     # Tải mô hình YOLOv11 1 lần khi server khởi động
     print(" Đang tải mô hình YOLOv11n...")
-    app.config["YOLO_MODEL"]     = YOLO(Config.MODEL_PATH)
+    app.config["YOLO_MODEL"]     = YOLO(Config.MODEL_PATH, task="detect")
     app.config["CONF_THRESHOLD"] = Config.CONF_THRESHOLD
     print(" Tải mô hình thành công!")
 
